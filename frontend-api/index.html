@@ -1,40 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
-<title>Automation API Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Automation API Platform</title>
 
 <style>
+
 body{
-    font-family: Arial, sans-serif;
-    background:#f4f4f4;
-    padding:40px;
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg,#1f2937,#4b5563);
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .container{
-    max-width:600px;
-    margin:auto;
     background:white;
-    padding:20px;
-    border-radius:8px;
+    width:500px;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+h1{
+    margin-top:0;
+    font-size:24px;
+    text-align:center;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-top:15px;
+}
+
+select,input{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:14px;
 }
 
 button{
-    padding:10px 15px;
-    margin-top:10px;
+    width:100%;
+    margin-top:20px;
+    padding:12px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
     cursor:pointer;
 }
 
-textarea{
-    width:100%;
-    height:120px;
+button:hover{
+    background:#1d4ed8;
+}
+
+.response{
+    margin-top:20px;
 }
 
 pre{
-    background:#eee;
-    padding:10px;
+    background:#111827;
+    color:#10b981;
+    padding:15px;
+    border-radius:6px;
     overflow:auto;
 }
+
+.hidden{
+    display:none;
+}
+
+.footer{
+    text-align:center;
+    margin-top:15px;
+    font-size:12px;
+    color:#777;
+}
+
 </style>
 </head>
 
@@ -42,35 +94,58 @@ pre{
 
 <div class="container">
 
-<h2>Automation API Platform</h2>
+<h1>Automation API Platform</h1>
 
 <label>Ação</label>
 
-<select id="action">
+<select id="action" onchange="toggleCpf()">
 <option value="password-generator">Password Generator</option>
 <option value="fake-data">Fake Data</option>
 <option value="motivational-quotes">Motivational Quote</option>
 <option value="cpf-validator">CPF Validator</option>
 </select>
 
-<br><br>
+<div id="cpfField" class="hidden">
 
-<label>CPF (somente para validator)</label>
-<input id="cpf" type="text" placeholder="Digite um CPF">
+<label>CPF</label>
+<input id="cpf" type="text" placeholder="Digite o CPF">
 
-<br><br>
+</div>
 
 <button onclick="sendRequest()">Enviar Request</button>
 
-<h3>Resposta</h3>
+<div class="response">
 
-<pre id="response"></pre>
+<h3>Resposta da API</h3>
+
+<pre id="response">
+A resposta aparecerá aqui
+</pre>
+
+</div>
+
+<div class="footer">
+Automation API Test Interface
+</div>
 
 </div>
 
 <script>
 
-const API_URL = "http://localhost:5678/webhook/api";
+const API_URL = "http://localhost:5678/webhook-test/api"; //Remeber to change this URL if your backend is running on a different address or port
+
+function toggleCpf(){
+
+    const action = document.getElementById("action").value;
+    const cpfField = document.getElementById("cpfField");
+
+    if(action === "cpf-validator"){
+        cpfField.classList.remove("hidden");
+    }else{
+        cpfField.classList.add("hidden");
+    }
+
+}
 
 async function sendRequest(){
 
@@ -83,18 +158,28 @@ async function sendRequest(){
         body.cpf = cpf;
     }
 
-    const response = await fetch(API_URL,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify(body)
-    });
+    try{
 
-    const data = await response.json();
+        const response = await fetch(API_URL,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(body)
+        });
 
-    document.getElementById("response").textContent =
-        JSON.stringify(data,null,2);
+        const data = await response.json();
+
+        document.getElementById("response").textContent =
+            JSON.stringify(data,null,2);
+
+    }catch(error){
+
+        document.getElementById("response").textContent =
+            "Erro ao conectar com a API.";
+
+    }
+
 }
 
 </script>
