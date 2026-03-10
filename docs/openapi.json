@@ -1,0 +1,46 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Automation API Platform",
+    "description": "API construída com n8n para automações utilitárias.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5678/webhook"
+    }
+  ],
+  "paths": {
+    "/automation-api": {
+      "post": {
+        "summary": "Automation Router",
+        "description": "Endpoint principal da Automation API",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "example": "generate-password"
+                  },
+                  "cpf": {
+                    "type": "string",
+                    "example": "12345678900"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resposta da automação"
+          }
+        }
+      }
+    }
+  }
+}
