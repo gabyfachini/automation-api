@@ -1,0 +1,118 @@
+{
+  "name": "Automation API Platform",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "automation-api",
+        "responseMode": "lastNode"
+      },
+      "id": "Webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{$json[\"action\"]}}",
+        "rules": [
+          { "operation": "equal", "value2": "generate-password" },
+          { "operation": "equal", "value2": "fake-user" },
+          { "operation": "equal", "value2": "random-quote" },
+          { "operation": "equal", "value2": "validate-cpf" },
+          { "operation": "equal", "value2": "visit-counter" }
+        ]
+      },
+      "id": "Switch",
+      "name": "Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "function gerarSenha(tamanho = 12) {\nconst chars = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%\";\nlet senha = \"\";\n\nfor (let i = 0; i < tamanho; i++) {\nsenha += chars.charAt(Math.floor(Math.random() * chars.length));\n}\n\nreturn senha;\n}\n\nreturn [{\nservice: \"password-generator\",\npassword: gerarSenha()\n}];"
+      },
+      "id": "Password",
+      "name": "Generate Password",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 100]
+    },
+    {
+      "parameters": {
+        "functionCode": "const nomes = [\"Ana\",\"Carlos\",\"Pedro\",\"Marina\"];\nconst cidades = [\"São Paulo\",\"Rio\",\"Curitiba\",\"Recife\"];\n\nreturn [{\nservice: \"fake-user\",\nnome: nomes[Math.floor(Math.random()*nomes.length)],\ncidade: cidades[Math.floor(Math.random()*cidades.length)],\nidade: Math.floor(Math.random()*60)+18\n}];"
+      },
+      "id": "FakeUser",
+      "name": "Fake User",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "const frases = [\n\"Consistência vence motivação.\",\n\"Feito é melhor que perfeito.\",\n\"Pequenos passos todos os dias.\",\n\"Disciplina cria liberdade.\"\n];\n\nreturn [{\nservice: \"quote\",\nquote: frases[Math.floor(Math.random()*frases.length)]\n}];"
+      },
+      "id": "Quote",
+      "name": "Random Quote",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "function validarCPF(cpf) {\ncpf = cpf.replace(/[^\\d]+/g,'');\nif(cpf.length !== 11) return false;\nreturn true;\n}\n\nreturn [{\nservice: \"cpf-validator\",\ncpf: $json.cpf,\nvalido: validarCPF($json.cpf)\n}];"
+      },
+      "id": "CPF",
+      "name": "Validate CPF",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "const data = this.getWorkflowStaticData('global');\n\nif (!data.visitas) {\ndata.visitas = 0;\n}\n\ndata.visitas += 1;\n\nreturn [{\nservice: \"visit-counter\",\nvisitas: data.visitas\n}];"
+      },
+      "id": "Visit",
+      "name": "Visit Counter",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 500]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router": {
+      "main": [
+        [
+          { "node": "Generate Password", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Fake User", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Random Quote", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Validate CPF", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "Visit Counter", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "active": false
+}
