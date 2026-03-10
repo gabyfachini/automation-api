@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Automation API Test</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f4f4;
+    padding:40px;
+}
+
+.container{
+    max-width:600px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+}
+
+button{
+    padding:10px 15px;
+    margin-top:10px;
+    cursor:pointer;
+}
+
+textarea{
+    width:100%;
+    height:120px;
+}
+
+pre{
+    background:#eee;
+    padding:10px;
+    overflow:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Automation API Platform</h2>
+
+<label>Ação</label>
+
+<select id="action">
+<option value="password-generator">Password Generator</option>
+<option value="fake-data">Fake Data</option>
+<option value="motivational-quotes">Motivational Quote</option>
+<option value="cpf-validator">CPF Validator</option>
+</select>
+
+<br><br>
+
+<label>CPF (somente para validator)</label>
+<input id="cpf" type="text" placeholder="Digite um CPF">
+
+<br><br>
+
+<button onclick="sendRequest()">Enviar Request</button>
+
+<h3>Resposta</h3>
+
+<pre id="response"></pre>
+
+</div>
+
+<script>
+
+const API_URL = "http://localhost:5678/webhook/api";
+
+async function sendRequest(){
+
+    const action = document.getElementById("action").value;
+    const cpf = document.getElementById("cpf").value;
+
+    let body = { action: action };
+
+    if(action === "cpf-validator"){
+        body.cpf = cpf;
+    }
+
+    const response = await fetch(API_URL,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(body)
+    });
+
+    const data = await response.json();
+
+    document.getElementById("response").textContent =
+        JSON.stringify(data,null,2);
+}
+
+</script>
+
+</body>
+</html>

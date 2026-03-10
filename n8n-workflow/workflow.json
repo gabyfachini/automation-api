@@ -1,118 +1,261 @@
 {
-  "name": "Automation API Platform",
+  "name": "Automation API Platform - Em Andamento",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "automation-api",
-        "responseMode": "lastNode"
+        "path": "api",
+        "responseMode": "lastNode",
+        "options": {}
       },
-      "id": "Webhook",
+      "id": "a0dfde84-aea8-4459-968b-409c587ac24a",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [200, 300]
-    },
-    {
-      "parameters": {
-        "dataType": "string",
-        "value1": "={{$json[\"action\"]}}",
-        "rules": [
-          { "operation": "equal", "value2": "generate-password" },
-          { "operation": "equal", "value2": "fake-user" },
-          { "operation": "equal", "value2": "random-quote" },
-          { "operation": "equal", "value2": "validate-cpf" },
-          { "operation": "equal", "value2": "visit-counter" }
-        ]
-      },
-      "id": "Switch",
-      "name": "Router",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 1,
-      "position": [400, 300]
+      "position": [
+        -656,
+        240
+      ],
+      "webhookId": "2367a1fe-2169-4f79-8ffc-f9ffd58cf87f"
     },
     {
       "parameters": {
         "functionCode": "function gerarSenha(tamanho = 12) {\nconst chars = \"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%\";\nlet senha = \"\";\n\nfor (let i = 0; i < tamanho; i++) {\nsenha += chars.charAt(Math.floor(Math.random() * chars.length));\n}\n\nreturn senha;\n}\n\nreturn [{\nservice: \"password-generator\",\npassword: gerarSenha()\n}];"
       },
-      "id": "Password",
+      "id": "f0401e62-fdcf-44ee-be4e-6a1b4ea357ed",
       "name": "Generate Password",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
-      "position": [650, 100]
+      "position": [
+        -320,
+        0
+      ]
     },
     {
       "parameters": {
-        "functionCode": "const nomes = [\"Ana\",\"Carlos\",\"Pedro\",\"Marina\"];\nconst cidades = [\"São Paulo\",\"Rio\",\"Curitiba\",\"Recife\"];\n\nreturn [{\nservice: \"fake-user\",\nnome: nomes[Math.floor(Math.random()*nomes.length)],\ncidade: cidades[Math.floor(Math.random()*cidades.length)],\nidade: Math.floor(Math.random()*60)+18\n}];"
+        "functionCode": "function validarCPF(cpf) {\n\nif (!cpf) {\nreturn false;\n}\n\ncpf = cpf.replace(/[^\\d]+/g,'');\n\nif (cpf.length !== 11) {\nreturn false;\n}\n\nreturn true;\n}\n\nconst cpf = $json.body?.cpf;\n\nreturn [\n{\njson: {\ncpf: cpf || null,\nvalido: validarCPF(cpf)\n}\n}\n];"
       },
-      "id": "FakeUser",
-      "name": "Fake User",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 1,
-      "position": [650, 200]
-    },
-    {
-      "parameters": {
-        "functionCode": "const frases = [\n\"Consistência vence motivação.\",\n\"Feito é melhor que perfeito.\",\n\"Pequenos passos todos os dias.\",\n\"Disciplina cria liberdade.\"\n];\n\nreturn [{\nservice: \"quote\",\nquote: frases[Math.floor(Math.random()*frases.length)]\n}];"
-      },
-      "id": "Quote",
-      "name": "Random Quote",
-      "type": "n8n-nodes-base.function",
-      "typeVersion": 1,
-      "position": [650, 300]
-    },
-    {
-      "parameters": {
-        "functionCode": "function validarCPF(cpf) {\ncpf = cpf.replace(/[^\\d]+/g,'');\nif(cpf.length !== 11) return false;\nreturn true;\n}\n\nreturn [{\nservice: \"cpf-validator\",\ncpf: $json.cpf,\nvalido: validarCPF($json.cpf)\n}];"
-      },
-      "id": "CPF",
+      "id": "572d9526-786e-4030-921b-fb9f197767c2",
       "name": "Validate CPF",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
-      "position": [650, 400]
+      "position": [
+        -240,
+        352
+      ]
     },
     {
       "parameters": {
-        "functionCode": "const data = this.getWorkflowStaticData('global');\n\nif (!data.visitas) {\ndata.visitas = 0;\n}\n\ndata.visitas += 1;\n\nreturn [{\nservice: \"visit-counter\",\nvisitas: data.visitas\n}];"
+        "functionCode": "const nomes = [\"Ana\",\"Carlos\",\"Pedro\",\"Marina\"];\nconst cidades = [\"São Paulo\",\"Rio\",\"Curitiba\",\"Recife\"];\n\nreturn [{\nservice: \"fake-data\",\nnome: nomes[Math.floor(Math.random()*nomes.length)],\ncidade: cidades[Math.floor(Math.random()*cidades.length)],\nidade: Math.floor(Math.random()*60)+18\n}];"
       },
-      "id": "Visit",
-      "name": "Visit Counter",
+      "id": "a800a0a5-b559-4a86-8f91-e0922780f2aa",
+      "name": "Fake Data",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
-      "position": [650, 500]
+      "position": [
+        16,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const frases = [\n\"Consistência vence motivação.\",\n\"Feito é melhor que perfeito.\",\n\"Pequenos passos todos os dias.\",\n\"Disciplina cria liberdade.\"\n];\n\nreturn [{\nservice: \"motivational-quotes\",\nquote: frases[Math.floor(Math.random()*frases.length)]\n}];"
+      },
+      "id": "fb8f1145-502e-4478-8c4e-b7184531da4e",
+      "name": "Motivacional Quote",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.body.action }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "password-generator"
+            },
+            {
+              "value2": "fake-data",
+              "output": 1
+            },
+            {
+              "value2": "motivational-quotes",
+              "output": 2
+            },
+            {
+              "value2": "cpf-validator",
+              "output": 3
+            }
+          ]
+        }
+      },
+      "id": "797e07e0-f71e-49a3-a254-554a6e0aaa62",
+      "name": "Router API",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -144,
+        -96
+      ],
+      "id": "40eb0c99-f9a3-4421-bcf1-bb0f3f44e276",
+      "name": "Respond to Password"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        224,
+        16
+      ],
+      "id": "bd070965-6b1d-4d4f-a8d3-e357a80a42f7",
+      "name": "Respond to Data"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        96,
+        192
+      ],
+      "id": "303c49ce-afb3-4da7-bde5-d5cdcd0da254",
+      "name": "Respond to Quote"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -32,
+        352
+      ],
+      "id": "dede9e4e-1377-4c10-b5a1-79038e97d292",
+      "name": "Respond to Validator"
     }
   ],
+  "pinData": {},
   "connections": {
     "Webhook": {
       "main": [
         [
           {
-            "node": "Router",
+            "node": "Router API",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Router": {
+    "Generate Password": {
       "main": [
         [
-          { "node": "Generate Password", "type": "main", "index": 0 }
+          {
+            "node": "Respond to Password",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate CPF": {
+      "main": [
+        [
+          {
+            "node": "Respond to Validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fake Data": {
+      "main": [
+        [
+          {
+            "node": "Respond to Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Motivacional Quote": {
+      "main": [
+        [
+          {
+            "node": "Respond to Quote",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router API": {
+      "main": [
+        [
+          {
+            "node": "Generate Password",
+            "type": "main",
+            "index": 0
+          }
         ],
         [
-          { "node": "Fake User", "type": "main", "index": 0 }
+          {
+            "node": "Fake Data",
+            "type": "main",
+            "index": 0
+          }
         ],
         [
-          { "node": "Random Quote", "type": "main", "index": 0 }
+          {
+            "node": "Motivacional Quote",
+            "type": "main",
+            "index": 0
+          }
         ],
         [
-          { "node": "Validate CPF", "type": "main", "index": 0 }
-        ],
-        [
-          { "node": "Visit Counter", "type": "main", "index": 0 }
+          {
+            "node": "Validate CPF",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
   },
-  "active": false
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "97e283c1-b2c9-45b5-a429-582988238088",
+  "meta": {
+    "instanceId": "34f9105c66527f4f65c6f70d4e0616775ae03e0a7ecbacfcd8926dc5aad1c863"
+  },
+  "id": "wyUfFTjO4j3I0Agw",
+  "tags": []
 }
